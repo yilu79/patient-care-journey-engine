@@ -440,9 +440,43 @@ The GET endpoint has been validated with the following test scenarios:
 - `npm run dev` - Start development server with hot reload
 - `npm run build` - Build TypeScript to JavaScript
 - `npm start` - Start production server
-- `npm test` - Run test suite
+- `npm test` - Run test suite (52 tests)
 - `npm run test:watch` - Run tests in watch mode
-- `npm run test:coverage` - Run tests with coverage report
+- `npm run test:coverage` - Run tests with coverage report (74% coverage)
+
+### Testing
+
+The project includes a comprehensive test suite with **52 tests** achieving **74% code coverage**:
+
+- **30 Unit Tests**: Conditional evaluator, executor logic, error handling
+- **22 Integration Tests**: API endpoints, E2E journey execution flows
+- **Test Framework**: Jest 30.2.0 with ts-jest for TypeScript
+- **API Testing**: Supertest for HTTP endpoint validation
+
+**Test Coverage:**
+
+- Statements: 74.09%
+- Branches: 70.5%
+- Functions: 70.83%
+- Lines: 75%
+
+For detailed testing documentation, see [TESTING.md](TESTING.md).
+
+**Quick Test Commands:**
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm test -- --coverage
+
+# Run specific test file
+npm test tests/unit/conditional.test.ts
+
+# Watch mode for development
+npm test -- --watch
+```
 
 ### Database
 
@@ -599,13 +633,15 @@ The API provides detailed error responses:
 - ✅ E2E testing with test script (`test-executor.sh`)
 - ✅ All node types tested and working correctly
 
-### Hour 4: Testing & Documentation 🔄
+### Hour 4: Testing & Documentation ✅
 
-- ⏳ Jest configuration
-- ⏳ Unit tests for executor and conditional logic
-- ⏳ Integration tests for full journey execution
+- ✅ Jest configuration with ts-jest
+- ✅ Unit tests for executor and conditional logic (30 tests)
+- ✅ Integration tests for API endpoints and journey execution (22 tests)
+- ✅ Example journey files (4 scenarios)
 - ✅ README documentation (comprehensive)
-- ⏳ Test coverage reporting
+- ✅ Test coverage reporting (74% overall)
+- ✅ TESTING.md with detailed test documentation
 
 ## 🔮 Future Enhancements
 
