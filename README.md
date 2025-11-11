@@ -220,7 +220,7 @@ GET /journeys/runs/:runId
 
 ### MESSAGE Node
 
-Sends a message to the patient.
+Sends a message to the patient (logged to console).
 
 ```json
 {
@@ -230,6 +230,13 @@ Sends a message to the patient.
   "next_node_id": "next_step"
 }
 ```
+
+**Execution Behavior:**
+
+- Logs message to server console with patient ID
+- Updates `current_node_id` to `next_node_id`
+- If `next_node_id` is null, marks journey as `completed`
+- Continues to next node automatically
 
 ### DELAY Node
 
@@ -243,6 +250,14 @@ Waits for specified duration before continuing.
   "next_node_id": "follow_up"
 }
 ```
+
+**Execution Behavior:**
+
+- Schedules continuation with `setTimeout`
+- Stores timeout reference in memory (Map<runId, NodeJS.Timeout>)
+- Updates database status to `in_progress` before waiting
+- Resumes execution after delay completes
+- **Note:** Delays do not survive server restarts
 
 ### CONDITIONAL Node
 
@@ -266,6 +281,65 @@ Branches based on patient context evaluation.
 
 - `>`, `<`, `>=`, `<=` - Numeric comparisons
 - `=`, `!=` - Equality/inequality (any type)
+
+**Execution Behavior:**
+
+- Evaluates condition against patient context
+- Supports nested field paths (e.g., `patient.age` or just `age`)
+- Branches to `true_node_id` or `false_node_id` based on result
+- Logs evaluation result to console
+- Continues to selected branch automatically
+
+## ⚙️ Journey Execution
+
+### How It Works
+
+When a journey is triggered via `POST /journeys/:id/trigger`:
+
+1. **Initialization:**
+
+   - Creates a new `journey_run` record with status `in_progress`
+   - Sets `current_node_id` to the journey's `start_node_id`
+   - Returns 202 Accepted immediately (non-blocking)
+
+2. **Async Execution:**
+
+   - Executor starts processing in the background
+   - Processes nodes sequentially, one at a time
+   - Updates database after each node
+
+3. **Node Processing Loop:**
+
+   ```
+   Start → Fetch Run → Fetch Journey → Find Current Node → Process Node
+           ↑                                                      ↓
+           └──────────── Continue to Next Node ←─────────────────┘
+   ```
+
+4. **Completion:**
+   - Journey marked as `completed` when reaching a terminal node
+   - Journey marked as `failed` if error occurs during processing
+
+### Example Execution Flow
+
+```
+[EXECUTOR] Starting execution for run ec7cd8ec-f8ab-42aa-9abf-9eb77d0ef4d3
+[EXECUTOR] Processing node msg1 (MESSAGE) for run ec7cd8ec...
+[MESSAGE] Sending message to patient patient-001: Welcome! Starting your journey...
+[EXECUTOR] Processing node cond1 (CONDITIONAL) for run ec7cd8ec...
+[CONDITIONAL] Evaluating condition: age > 65
+[CONDITIONAL] Result: true
+[EXECUTOR] Processing node msg_senior (MESSAGE) for run ec7cd8ec...
+[MESSAGE] Sending message to patient patient-001: You qualify for senior care programs!
+[EXECUTOR] Journey run ec7cd8ec-f8ab-42aa-9abf-9eb77d0ef4d3 completed
+```
+
+### State Management
+
+- **Database:** Persistent storage for journey definitions and run state
+- **In-Memory:** Active delay timeouts (Map<runId, NodeJS.Timeout>)
+- **Status Updates:** After each node, `current_node_id` updated in database
+- **Error Handling:** Failed runs marked as `failed` with error logging
 
 ## 🧪 Testing the API
 
@@ -299,6 +373,27 @@ Branches based on patient context evaluation.
    curl -i http://localhost:3000/journeys/runs/non-existent-id
    # Expected: HTTP 404 with error message
    ```
+
+### Automated Test Script
+
+Run the included test script for comprehensive E2E testing:
+
+```bash
+# Make sure server is running first
+npm run dev
+
+# In another terminal, run the test script
+./test-executor.sh
+```
+
+**Test Script Features:**
+
+- Creates a journey with MESSAGE and CONDITIONAL nodes
+- Tests senior patient path (age > 65)
+- Tests general patient path (age < 65)
+- Verifies execution completion and status updates
+- Displays formatted JSON responses
+- Checks server logs for MESSAGE outputs
 
 ### Complete Test Flow
 
@@ -378,6 +473,44 @@ The project uses:
 
 The SQLite database is automatically created and initialized with the required schema on first startup. No additional configuration needed.
 
+## 🎯 Design Decisions & Assumptions
+
+### Architecture Choices
+
+1. **SQLite Database:**
+
+   - File-based storage for simplicity and zero configuration
+   - Single file (`journeys.db`) contains all data
+   - Auto-initialization of schema on startup
+   - Perfect for development and single-instance deployments
+
+2. **In-Memory Timeout Tracking:**
+
+   - Active DELAY nodes tracked in JavaScript Map
+   - Fast and efficient for single-server setup
+   - **Limitation:** Delays do not survive server restarts
+   - **Production Alternative:** Use external job queue (Bull, BullMQ, etc.)
+
+3. **Synchronous Node Processing:**
+
+   - Nodes processed one at a time, in sequence
+   - Simpler to reason about and debug
+   - Database updated after each node
+   - **Alternative:** Could parallelize independent branches
+
+4. **Async Journey Execution:**
+   - POST /trigger returns 202 immediately
+   - Execution happens in background (non-blocking)
+   - Status checked via GET /runs/:runId
+   - Follows async processing best practices
+
+### Execution Behavior
+
+- **MESSAGE Nodes:** Logged to console (in production, would integrate with messaging service)
+- **CONDITIONAL Nodes:** Simple expression evaluation (no complex logic support)
+- **DELAY Nodes:** setTimeout-based (production would use durable job queue)
+- **Error Handling:** Failed journeys marked as `failed` with error logging
+
 ## 📝 Journey Validation
 
 The API performs comprehensive validation:
@@ -397,11 +530,132 @@ The API provides detailed error responses:
 - `409 Conflict` - Database constraint violations
 - `500 Internal Server Error` - Server errors (with details in development)
 
-## 🔮 Future Implementation
+### Journey Execution Error Handling
 
-- **Journey Executor** (Hour 3) - Actual node processing and execution
-- **Testing Suite** (Hour 4) - Unit and integration tests
-- **Advanced Features** - Webhooks, parallel execution, retry mechanisms
+- **Missing Journey/Run:** Graceful handling with error logging
+- **Invalid Node References:** Journey marked as `failed`
+- **Node Processing Errors:** Caught and logged, run status set to `failed`
+- **Database Errors:** Transaction rollback and error reporting
+
+## ⚠️ Known Limitations
+
+1. **Delay Persistence:**
+
+   - DELAY nodes use in-memory `setTimeout`
+   - Active delays are lost on server restart
+   - Run remains in `in_progress` state after restart
+   - **Production Solution:** Use persistent job queue (Redis, RabbitMQ, Bull)
+
+2. **Scalability:**
+
+   - Single-instance design (in-memory state)
+   - SQLite has write concurrency limits
+   - **Production Solution:** PostgreSQL + distributed job queue
+
+3. **Retry Mechanism:**
+
+   - No automatic retry for failed nodes
+   - Failed journeys require manual intervention
+   - **Future Enhancement:** Implement retry logic with exponential backoff
+
+4. **Parallel Execution:**
+
+   - Nodes processed sequentially only
+   - No support for concurrent branches
+   - **Future Enhancement:** DAG-based execution with parallel paths
+
+5. **Condition Evaluation:**
+   - Simple expressions only (field operator value)
+   - No complex logic (AND/OR combinations)
+   - No nested conditions
+   - **Future Enhancement:** Expression language support
+
+## ✅ Implementation Status
+
+### Hour 1: Project Setup & Core Data Models ✅
+
+- ✅ npm installation and TypeScript configuration
+- ✅ Project structure with organized directories
+- ✅ Complete type definitions (Journey, JourneyRun, PatientContext, Nodes)
+- ✅ SQLite database schema with proper indexes
+- ✅ Type-safe database queries with prepared statements
+
+### Hour 2: API Implementation ✅
+
+- ✅ Express app setup with middleware and error handling
+- ✅ POST /journeys - Create journey with comprehensive validation
+- ✅ POST /journeys/:id/trigger - Trigger execution (202 Accepted)
+- ✅ GET /journeys/runs/:runId - Get run status
+- ✅ All endpoints tested and validated
+
+### Hour 3: Journey Executor Logic ✅
+
+- ✅ Core executor service (`src/services/executor.ts`)
+- ✅ MESSAGE node handler (console logging + continuation)
+- ✅ CONDITIONAL node handler (all operators: >, <, >=, <=, =, !=)
+- ✅ DELAY node handler (setTimeout with in-memory tracking)
+- ✅ Main `executeJourney()` function with error handling
+- ✅ Integration with trigger endpoint (async execution)
+- ✅ E2E testing with test script (`test-executor.sh`)
+- ✅ All node types tested and working correctly
+
+### Hour 4: Testing & Documentation 🔄
+
+- ⏳ Jest configuration
+- ⏳ Unit tests for executor and conditional logic
+- ⏳ Integration tests for full journey execution
+- ✅ README documentation (comprehensive)
+- ⏳ Test coverage reporting
+
+## 🔮 Future Enhancements
+
+### Production Readiness
+
+- **Persistent Job Queue:** Replace setTimeout with Bull/BullMQ + Redis
+- **Database Migration:** Move from SQLite to PostgreSQL for scalability
+- **Horizontal Scaling:** Support multiple server instances
+- **Monitoring:** Add APM, metrics, and health checks
+- **Authentication:** Add API key or OAuth authentication
+- **Rate Limiting:** Protect endpoints from abuse
+
+### Advanced Features
+
+- **Webhooks:** Call external URLs for MESSAGE nodes
+- **Journey Versioning:** Track and manage journey versions
+- **Parallel Execution:** Support concurrent branch processing
+- **Complex Conditions:** AND/OR logic, nested conditions
+- **Retry Logic:** Automatic retry with exponential backoff
+- **Run History:** Query all runs for a journey
+- **Journey Cancellation:** DELETE /journeys/runs/:runId endpoint
+
+## 🧪 Test Results
+
+### Executor Tests (Validated)
+
+✅ **MESSAGE Node Test:**
+
+- Messages logged to console with patient ID
+- Correct continuation to next node
+- Terminal nodes mark journey as completed
+
+✅ **CONDITIONAL Node Test:**
+
+- Senior patient (age=70): Correctly branched to `true_node_id`
+- Young patient (age=45): Correctly branched to `false_node_id`
+- Condition evaluation logged and accurate
+
+✅ **DELAY Node Test:**
+
+- 3-second delay scheduled correctly
+- Execution resumed after delay
+- Timestamps show correct 3-second gap (created_at → updated_at)
+- Timeout tracked in memory successfully
+
+✅ **Error Handling:**
+
+- Invalid run IDs handled gracefully
+- Missing nodes fail journey with proper status
+- Database errors caught and logged
 
 ## 📄 License
 
