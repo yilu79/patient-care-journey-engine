@@ -7,8 +7,9 @@ const activeTimeouts = new Map<string, NodeJS.Timeout>();
 /**
  * Evaluates a conditional expression against patient context
  * Supports operators: >, <, >=, <=, =, !=
+ * Exported for testing purposes
  */
-function evaluateCondition(
+export function evaluateCondition(
   context: PatientContext,
   field: string,
   operator: string,

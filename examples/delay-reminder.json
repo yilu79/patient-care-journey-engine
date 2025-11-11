@@ -1,0 +1,24 @@
+{
+  "name": "Follow-Up Reminder Journey",
+  "start_node_id": "initial_message",
+  "nodes": [
+    {
+      "id": "initial_message",
+      "type": "MESSAGE",
+      "message": "Your appointment is confirmed. We'll send you a reminder soon.",
+      "next_node_id": "wait_24h"
+    },
+    {
+      "id": "wait_24h",
+      "type": "DELAY",
+      "delay_seconds": 5,
+      "next_node_id": "reminder"
+    },
+    {
+      "id": "reminder",
+      "type": "MESSAGE",
+      "message": "Reminder: Your appointment is tomorrow. Please arrive 15 minutes early.",
+      "next_node_id": null
+    }
+  ]
+}

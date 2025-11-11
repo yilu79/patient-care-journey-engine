@@ -1,0 +1,58 @@
+{
+  "name": "Chronic Disease Management Journey",
+  "start_node_id": "welcome",
+  "nodes": [
+    {
+      "id": "welcome",
+      "type": "MESSAGE",
+      "message": "Welcome to our Disease Management Program",
+      "next_node_id": "check_condition"
+    },
+    {
+      "id": "check_condition",
+      "type": "CONDITIONAL",
+      "condition": {
+        "field": "condition",
+        "operator": "=",
+        "value": "diabetes"
+      },
+      "true_node_id": "diabetes_path",
+      "false_node_id": "check_hypertension"
+    },
+    {
+      "id": "check_hypertension",
+      "type": "CONDITIONAL",
+      "condition": {
+        "field": "condition",
+        "operator": "=",
+        "value": "hypertension"
+      },
+      "true_node_id": "hypertension_path",
+      "false_node_id": "general_path"
+    },
+    {
+      "id": "diabetes_path",
+      "type": "MESSAGE",
+      "message": "As a diabetes patient, please monitor your blood sugar daily and log it in our app.",
+      "next_node_id": "schedule_follow_up"
+    },
+    {
+      "id": "hypertension_path",
+      "type": "MESSAGE",
+      "message": "For hypertension management, please check your blood pressure twice daily.",
+      "next_node_id": "schedule_follow_up"
+    },
+    {
+      "id": "general_path",
+      "type": "MESSAGE",
+      "message": "We'll create a personalized care plan for your condition.",
+      "next_node_id": "schedule_follow_up"
+    },
+    {
+      "id": "schedule_follow_up",
+      "type": "MESSAGE",
+      "message": "Your care coordinator will contact you within 2 business days to schedule your first check-in.",
+      "next_node_id": null
+    }
+  ]
+}

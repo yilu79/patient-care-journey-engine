@@ -1,0 +1,35 @@
+{
+  "name": "Age-Based Care Journey",
+  "start_node_id": "welcome",
+  "nodes": [
+    {
+      "id": "welcome",
+      "type": "MESSAGE",
+      "message": "Welcome to your care journey!",
+      "next_node_id": "check_age"
+    },
+    {
+      "id": "check_age",
+      "type": "CONDITIONAL",
+      "condition": {
+        "field": "age",
+        "operator": ">",
+        "value": 65
+      },
+      "true_node_id": "senior_message",
+      "false_node_id": "general_message"
+    },
+    {
+      "id": "senior_message",
+      "type": "MESSAGE",
+      "message": "As a senior patient, you have access to specialized care programs including Medicare support and geriatric specialists.",
+      "next_node_id": null
+    },
+    {
+      "id": "general_message",
+      "type": "MESSAGE",
+      "message": "Thank you for choosing our care program! We're here to support your health journey.",
+      "next_node_id": null
+    }
+  ]
+}
