@@ -164,22 +164,57 @@ Content-Type: application/json
 GET /journeys/runs/:runId
 ```
 
-**Response (200 OK):**
+**Success Response (200 OK):**
 
 ```json
 {
-  "id": "fc510827-9240-46c3-8598-aaf7f07bfbe0",
-  "journey_id": "6ad40b69-b577-49c9-abc7-feed24d2e98a",
+  "id": "445ccbdc-49ba-4b21-8354-8a1e55e52470",
+  "journey_id": "97b1a13b-9428-4094-8832-7983e1699470",
   "patient_context": {
-    "patient_id": "patient-123",
-    "age": 70
+    "patient_id": "patient-456",
+    "age": 45,
+    "condition": "hypertension"
   },
   "status": "in_progress",
   "current_node_id": "welcome",
-  "created_at": "2025-11-12T03:36:50.000Z",
-  "updated_at": "2025-11-12T03:36:50.000Z"
+  "created_at": "2025-11-12T03:54:21.000Z",
+  "updated_at": "2025-11-12T03:54:21.000Z"
 }
 ```
+
+**Error Response (404 Not Found):**
+
+```json
+{
+  "error": "Journey run not found",
+  "run_id": "non-existent-id"
+}
+```
+
+**Response Fields:**
+
+- `id` - Unique run identifier (UUID)
+- `journey_id` - Reference to the journey definition
+- `patient_context` - Full patient information provided at trigger
+- `status` - Current execution status (`in_progress`, `completed`, `failed`)
+- `current_node_id` - ID of the node currently being processed (null if completed/failed)
+- `created_at` - ISO 8601 timestamp of run creation
+- `updated_at` - ISO 8601 timestamp of last update
+
+**Validation Testing:**
+
+✅ **Happy Path Tests:**
+
+- Returns 200 with all required fields for valid run ID
+- Patient context preserved with all custom fields
+- Timestamps in ISO 8601 format
+- Proper JSON structure
+
+✅ **Negative Tests:**
+
+- Returns 404 for non-existent run ID
+- Returns 404 for invalid UUID format
+- Graceful error messages with context
 
 ## 🧩 Journey Node Types
 
@@ -253,8 +288,16 @@ Branches based on patient context evaluation.
    ```
 
 3. **Check run status:**
+
    ```bash
    curl http://localhost:3000/journeys/runs/{RUN_ID}
+   ```
+
+4. **Test 404 error handling:**
+   ```bash
+   # Non-existent run ID
+   curl -i http://localhost:3000/journeys/runs/non-existent-id
+   # Expected: HTTP 404 with error message
    ```
 
 ### Complete Test Flow
@@ -265,14 +308,35 @@ JOURNEY_ID=$(curl -s -X POST http://localhost:3000/journeys \
   -H "Content-Type: application/json" \
   -d @test-journey.json | jq -r '.journey_id')
 
+echo "Journey ID: $JOURNEY_ID"
+
 # 2. Trigger execution
 RUN_ID=$(curl -s -X POST http://localhost:3000/journeys/$JOURNEY_ID/trigger \
   -H "Content-Type: application/json" \
   -d '{"patient_context":{"patient_id":"patient-123","age":70}}' | jq -r '.run_id')
 
-# 3. Check status
+echo "Run ID: $RUN_ID"
+
+# 3. Check status (with pretty print)
 curl -s http://localhost:3000/journeys/runs/$RUN_ID | jq
 ```
+
+### Validated Test Cases
+
+The GET endpoint has been validated with the following test scenarios:
+
+✅ **Happy Path:**
+
+- Valid run ID returns complete data with all fields
+- Patient context includes all custom fields
+- Status reflects current execution state
+- Timestamps in proper ISO format
+
+✅ **Error Handling:**
+
+- Non-existent run ID returns 404
+- Invalid UUID format returns 404
+- Error responses include helpful context
 
 ## 🛠️ Development
 
