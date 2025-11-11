@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { journeyQueries } from '../db/queries';
+import { executeJourney } from '../services/executor';
 import { 
   CreateJourneyRequest, 
   CreateJourneyResponse,
@@ -212,8 +213,10 @@ router.post('/:journeyId/trigger', (req: Request, res: Response) => {
 
     console.log(`🚀 Journey execution started: ${journey.name} for patient ${patient_context.patient_id} (Run ID: ${runId})`);
 
-    // TODO: Trigger async executor (will implement in Hour 3)
-    console.log(`⏳ Journey executor will be implemented in Hour 3`);
+    // Trigger async executor (don't wait for completion)
+    executeJourney(runId).catch(error => {
+      console.error(`❌ Error executing journey run ${runId}:`, error);
+    });
 
     // Return 202 with run ID and Location header
     const response: TriggerJourneyResponse = { run_id: runId };
