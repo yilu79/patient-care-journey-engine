@@ -1,0 +1,187 @@
+{
+	"info": {
+		"_postman_id": "fd6ba61e-7337-4c3d-932d-cee5d002be93",
+		"name": "patient-care-journey-engine",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37863779"
+	},
+	"item": [
+		{
+			"name": "Health-check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-simple-journey",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Simple Welcome Journey\",\n  \"start_node_id\": \"welcome\",\n  \"nodes\": [\n    {\n      \"id\": \"welcome\",\n      \"type\": \"MESSAGE\",\n      \"message\": \"Welcome to your care journey!\",\n      \"next_node_id\": \"check_age\"\n    },\n    {\n      \"id\": \"check_age\",\n      \"type\": \"CONDITIONAL\",\n      \"condition\": {\n        \"field\": \"age\",\n        \"operator\": \">\",\n        \"value\": 65\n      },\n      \"on_true_next_node_id\": \"senior_message\",\n      \"on_false_next_node_id\": \"general_message\"\n    },\n    {\n      \"id\": \"senior_message\",\n      \"type\": \"MESSAGE\",\n      \"message\": \"As a senior patient, you have access to specialized care programs.\",\n      \"next_node_id\": null\n    },\n    {\n      \"id\": \"general_message\",\n      \"type\": \"MESSAGE\",\n      \"message\": \"Thank you for choosing our care program!\",\n      \"next_node_id\": null\n    }\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/journeys",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"journeys"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "start-execution-run",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"patient_context\": {\n        \"id\": \"patient-123\",\n        \"age\": 70,\n        \"language\": \"en\",\n        \"condition\": \"hip_replacement\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/journeys/6dece05d-1d00-4f94-b14f-ade33fd928a9/trigger",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"journeys",
+						"6dece05d-1d00-4f94-b14f-ade33fd928a9",
+						"trigger"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "check-run-status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/journeys/runs/a7e3f0a1-2d10-4229-93fb-e0b871f3a035",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"journeys",
+						"runs",
+						"a7e3f0a1-2d10-4229-93fb-e0b871f3a035"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "run-not-found",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/journeys/runs/11111111111",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"journeys",
+						"runs",
+						"11111111111"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-complex-journey",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Orthopedic Surgery Recovery Journey\",\n  \"start_node_id\": \"check_language\",\n  \"nodes\": [\n    {\n      \"id\": \"check_language\",\n      \"type\": \"CONDITIONAL\",\n      \"condition\": {\n        \"field\": \"language\",\n        \"operator\": \"=\",\n        \"value\": \"es\"\n      },\n      \"on_true_next_node_id\": \"welcome_spanish\",\n      \"on_false_next_node_id\": \"welcome_english\"\n    },\n    {\n      \"id\": \"welcome_english\",\n      \"type\": \"MESSAGE\",\n      \"message\": \"Welcome to your personalized recovery program. We're here to support your healing journey.\",\n      \"next_node_id\": \"processing_delay\"\n    },\n    {\n      \"id\": \"welcome_spanish\",\n      \"type\": \"MESSAGE\",\n      \"message\": \"Bienvenido a su programa de recuperación personalizado. Estamos aquí para apoyar su proceso de sanación.\",\n      \"next_node_id\": \"processing_delay\"\n    },\n    {\n      \"id\": \"processing_delay\",\n      \"type\": \"DELAY\",\n      \"delay_seconds\": 2,\n      \"next_node_id\": \"check_surgery_type\"\n    },\n    {\n      \"id\": \"check_surgery_type\",\n      \"type\": \"CONDITIONAL\",\n      \"condition\": {\n        \"field\": \"condition\",\n        \"operator\": \"=\",\n        \"value\": \"hip_replacement\"\n      },\n      \"on_true_next_node_id\": \"hip_replacement_path\",\n      \"on_false_next_node_id\": \"knee_replacement_path\"\n    },\n    {\n      \"id\": \"hip_replacement_path\",\n      \"type\": \"CONDITIONAL\",\n      \"condition\": {\n        \"field\": \"language\",\n        \"operator\": \"=\",\n        \"value\": \"es\"\n      },\n      \"on_true_next_node_id\": \"hip_instructions_spanish\",\n      \"on_false_next_node_id\": \"hip_instructions_english\"\n    },\n    {\n      \"id\": \"hip_instructions_english\",\n      \"type\": \"MESSAGE\",\n      \"message\": \"Hip replacement recovery: Avoid bending your hip more than 90 degrees. Use your walker for the first 6 weeks. Physical therapy starts in 2-3 days.\",\n      \"next_node_id\": \"recovery_delay\"\n    },\n    {\n      \"id\": \"hip_instructions_spanish\",\n      \"type\": \"MESSAGE\",\n      \"message\": \"Recuperación de reemplazo de cadera: Evite doblar la cadera más de 90 grados. Use su andador durante las primeras 6 semanas. La fisioterapia comenzará en 2-3 días.\",\n      \"next_node_id\": \"recovery_delay\"\n    },\n    {\n      \"id\": \"knee_replacement_path\",\n      \"type\": \"CONDITIONAL\",\n      \"condition\": {\n        \"field\": \"language\",\n        \"operator\": \"=\",\n        \"value\": \"es\"\n      },\n      \"on_true_next_node_id\": \"knee_instructions_spanish\",\n      \"on_false_next_node_id\": \"knee_instructions_english\"\n    },\n    {\n      \"id\": \"knee_instructions_english\",\n      \"type\": \"MESSAGE\",\n      \"message\": \"Knee replacement recovery: Keep your leg elevated when resting. Do your ankle pumps every hour. Ice for 20 minutes, 3 times daily.\",\n      \"next_node_id\": \"recovery_delay\"\n    },\n    {\n      \"id\": \"knee_instructions_spanish\",\n      \"type\": \"MESSAGE\",\n      \"message\": \"Recuperación de reemplazo de rodilla: Mantenga la pierna elevada al descansar. Haga ejercicios de tobillo cada hora. Aplique hielo por 20 minutos, 3 veces al día.\",\n      \"next_node_id\": \"recovery_delay\"\n    },\n    {\n      \"id\": \"recovery_delay\",\n      \"type\": \"DELAY\",\n      \"delay_seconds\": 20,\n      \"next_node_id\": \"follow_up_message\"\n    },\n    {\n      \"id\": \"follow_up_message\",\n      \"type\": \"CONDITIONAL\",\n      \"condition\": {\n        \"field\": \"language\",\n        \"operator\": \"=\",\n        \"value\": \"es\"\n      },\n      \"on_true_next_node_id\": \"follow_up_spanish\",\n      \"on_false_next_node_id\": \"follow_up_english\"\n    },\n    {\n      \"id\": \"follow_up_english\",\n      \"type\": \"MESSAGE\",\n      \"message\": \"Remember: Take your pain medication as prescribed and call us immediately if you experience fever, increased swelling, or severe pain.\",\n      \"next_node_id\": null\n    },\n    {\n      \"id\": \"follow_up_spanish\",\n      \"type\": \"MESSAGE\",\n      \"message\": \"Recuerde: Tome su medicamento para el dolor según lo recetado y llámenos inmediatamente si experimenta fiebre, hinchazón aumentada o dolor severo.\",\n      \"next_node_id\": null\n    }\n  ]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/journeys",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"journeys"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "trigger-delay-run",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"patient_context\": {\n        \"id\": \"patient-en-70-hip\",\n        \"age\": 45,\n        \"language\": \"en\",\n        \"condition\": \"hip_replacement\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/journeys/842261a4-43f3-4582-9cc1-d6d4109bfd5c/trigger",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"journeys",
+						"842261a4-43f3-4582-9cc1-d6d4109bfd5c",
+						"trigger"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

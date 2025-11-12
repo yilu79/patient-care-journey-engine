@@ -1,57 +1,120 @@
 {
-  "name": "Chronic Disease Management Journey",
-  "start_node_id": "welcome",
+  "name": "Orthopedic Surgery Recovery Journey",
+  "start_node_id": "check_language",
   "nodes": [
     {
-      "id": "welcome",
-      "type": "MESSAGE",
-      "message": "Welcome to our Disease Management Program",
-      "next_node_id": "check_condition"
+      "id": "check_language",
+      "type": "CONDITIONAL",
+      "condition": {
+        "field": "language",
+        "operator": "=",
+        "value": "es"
+      },
+      "on_true_next_node_id": "welcome_spanish",
+      "on_false_next_node_id": "welcome_english"
     },
     {
-      "id": "check_condition",
+      "id": "welcome_english",
+      "type": "MESSAGE",
+      "message": "Welcome to your personalized recovery program. We're here to support your healing journey.",
+      "next_node_id": "processing_delay"
+    },
+    {
+      "id": "welcome_spanish",
+      "type": "MESSAGE",
+      "message": "Bienvenido a su programa de recuperación personalizado. Estamos aquí para apoyar su proceso de sanación.",
+      "next_node_id": "processing_delay"
+    },
+    {
+      "id": "processing_delay",
+      "type": "DELAY",
+      "delay_seconds": 2,
+      "next_node_id": "check_surgery_type"
+    },
+    {
+      "id": "check_surgery_type",
       "type": "CONDITIONAL",
       "condition": {
         "field": "condition",
         "operator": "=",
-        "value": "diabetes"
+        "value": "hip_replacement"
       },
-      "on_true_next_node_id": "diabetes_path",
-      "on_false_next_node_id": "check_hypertension"
+      "on_true_next_node_id": "hip_replacement_path",
+      "on_false_next_node_id": "knee_replacement_path"
     },
     {
-      "id": "check_hypertension",
+      "id": "hip_replacement_path",
       "type": "CONDITIONAL",
       "condition": {
-        "field": "condition",
+        "field": "language",
         "operator": "=",
-        "value": "hypertension"
+        "value": "es"
       },
-      "on_true_next_node_id": "hypertension_path",
-      "on_false_next_node_id": "general_path"
+      "on_true_next_node_id": "hip_instructions_spanish",
+      "on_false_next_node_id": "hip_instructions_english"
     },
     {
-      "id": "diabetes_path",
+      "id": "hip_instructions_english",
       "type": "MESSAGE",
-      "message": "As a diabetes patient, please monitor your blood sugar daily and log it in our app.",
-      "next_node_id": "schedule_follow_up"
+      "message": "Hip replacement recovery: Avoid bending your hip more than 90 degrees. Use your walker for the first 6 weeks. Physical therapy starts in 2-3 days.",
+      "next_node_id": "recovery_delay"
     },
     {
-      "id": "hypertension_path",
+      "id": "hip_instructions_spanish",
       "type": "MESSAGE",
-      "message": "For hypertension management, please check your blood pressure twice daily.",
-      "next_node_id": "schedule_follow_up"
+      "message": "Recuperación de reemplazo de cadera: Evite doblar la cadera más de 90 grados. Use su andador durante las primeras 6 semanas. La fisioterapia comenzará en 2-3 días.",
+      "next_node_id": "recovery_delay"
     },
     {
-      "id": "general_path",
-      "type": "MESSAGE",
-      "message": "We'll create a personalized care plan for your condition.",
-      "next_node_id": "schedule_follow_up"
+      "id": "knee_replacement_path",
+      "type": "CONDITIONAL",
+      "condition": {
+        "field": "language",
+        "operator": "=",
+        "value": "es"
+      },
+      "on_true_next_node_id": "knee_instructions_spanish",
+      "on_false_next_node_id": "knee_instructions_english"
     },
     {
-      "id": "schedule_follow_up",
+      "id": "knee_instructions_english",
       "type": "MESSAGE",
-      "message": "Your care coordinator will contact you within 2 business days to schedule your first check-in.",
+      "message": "Knee replacement recovery: Keep your leg elevated when resting. Do your ankle pumps every hour. Ice for 20 minutes, 3 times daily.",
+      "next_node_id": "recovery_delay"
+    },
+    {
+      "id": "knee_instructions_spanish",
+      "type": "MESSAGE",
+      "message": "Recuperación de reemplazo de rodilla: Mantenga la pierna elevada al descansar. Haga ejercicios de tobillo cada hora. Aplique hielo por 20 minutos, 3 veces al día.",
+      "next_node_id": "recovery_delay"
+    },
+    {
+      "id": "recovery_delay",
+      "type": "DELAY",
+      "delay_seconds": 60,
+      "next_node_id": "follow_up_message"
+    },
+    {
+      "id": "follow_up_message",
+      "type": "CONDITIONAL",
+      "condition": {
+        "field": "language",
+        "operator": "=",
+        "value": "es"
+      },
+      "on_true_next_node_id": "follow_up_spanish",
+      "on_false_next_node_id": "follow_up_english"
+    },
+    {
+      "id": "follow_up_english",
+      "type": "MESSAGE",
+      "message": "Remember: Take your pain medication as prescribed and call us immediately if you experience fever, increased swelling, or severe pain.",
+      "next_node_id": null
+    },
+    {
+      "id": "follow_up_spanish",
+      "type": "MESSAGE",
+      "message": "Recuerde: Tome su medicamento para el dolor según lo recetado y llámenos inmediatamente si experimenta fiebre, hinchazón aumentada o dolor severo.",
       "next_node_id": null
     }
   ]

@@ -107,14 +107,14 @@ A backend journey orchestration engine that executes patient care pathways with 
 ### Prerequisites
 
 - Node.js 18+ (LTS)
-- npm or yarn
+- npm
 
 ### Installation
 
 1. **Clone and setup the project:**
 
    ```bash
-   git clone <repository-url>
+   git clone git@github.com:yilu79/patient-care-journey-engine.git
    cd patient-care-journey-engine
    npm install
    ```
@@ -137,7 +137,7 @@ A backend journey orchestration engine that executes patient care pathways with 
 ### Health Check
 
 ```http
-GET /health
+http://localhost:3000/health
 ```
 
 **Response (200 OK):**
@@ -153,48 +153,7 @@ GET /health
 ### 1. Create Journey
 
 ```http
-POST /journeys
-Content-Type: application/json
-```
-
-**Request Body:**
-
-```json
-{
-  "name": "Simple Welcome Journey",
-  "start_node_id": "welcome",
-  "nodes": [
-    {
-      "id": "welcome",
-      "type": "MESSAGE",
-      "message": "Welcome to your care journey!",
-      "next_node_id": "check_age"
-    },
-    {
-      "id": "check_age",
-      "type": "CONDITIONAL",
-      "condition": {
-        "field": "age",
-        "operator": ">",
-        "value": 65
-      },
-      "on_true_next_node_id": "senior_message",
-      "on_false_next_node_id": "general_message"
-    },
-    {
-      "id": "senior_message",
-      "type": "MESSAGE",
-      "message": "As a senior patient, you have access to specialized care programs.",
-      "next_node_id": null
-    },
-    {
-      "id": "general_message",
-      "type": "MESSAGE",
-      "message": "Thank you for choosing our care program!",
-      "next_node_id": null
-    }
-  ]
-}
+curl -X POST http://localhost:3000/journeys -H "Content-Type: application/json" -d @examples/simple-message.json
 ```
 
 **Response (201 Created):**
@@ -208,21 +167,7 @@ Content-Type: application/json
 ### 2. Trigger Journey Execution
 
 ```http
-POST /journeys/:journeyId/trigger
-Content-Type: application/json
-```
-
-**Request Body:**
-
-```json
-{
-  "patient_context": {
-    "id": "patient-123",
-    "age": 70,
-    "language": "en",
-    "condition": "hip_replacement"
-  }
-}
+curl -X POST http://localhost:3000/journeys/:journeyId/trigger -H "Content-Type: application/json" -d '{"patient_context":{"id":"patient-123","age":70,"language":"en","condition":"hip_replacement"}}'
 ```
 
 **Response (202 Accepted):**
@@ -233,14 +178,10 @@ Content-Type: application/json
 }
 ```
 
-**Headers:**
-
-- `Location: /journeys/runs/fc510827-9240-46c3-8598-aaf7f07bfbe0`
-
 ### 3. Get Journey Run Status
 
 ```http
-GET /journeys/runs/:runId
+curl http://localhost:3000/journeys/runs/:runId
 ```
 
 **Success Response (200 OK):**
@@ -255,8 +196,8 @@ GET /journeys/runs/:runId
     "language": "es",
     "condition": "knee_replacement"
   },
-  "status": "in_progress",
-  "current_node_id": "welcome",
+  "status": "completed",
+  "current_node_id": null,
   "created_at": "2025-11-12T03:54:21.000Z",
   "updated_at": "2025-11-12T03:54:21.000Z"
 }
@@ -270,6 +211,41 @@ GET /journeys/runs/:runId
   "run_id": "non-existent-id"
 }
 ```
+
+## 📮 Postman Collection
+
+For easier API testing, a complete Postman collection is available that includes all endpoints with pre-configured requests and sample data.
+
+### Import Collection
+
+1. **Download the collection file:**
+
+   - File: [`patient-care-journey-engine.postman_collection.json`](./examples/patient-care-journey-engine.postman_collection.json)
+
+2. **Import into Postman:**
+   - Open Postman client
+   - Click "Import" button
+   - Select the downloaded JSON file
+   - Collection will be added to your workspace
+
+### Available Requests
+
+The collection includes the following pre-configured requests:
+
+- **Health Check** - `GET /health`
+- **Create Simple Journey** - `POST /journeys` (basic age-based conditional)
+- **Create Complex Journey** - `POST /journeys` (multilingual orthopedic surgery journey)
+- **Start Execution Run** - `POST /journeys/:id/trigger` (with sample patient context)
+- **Trigger Delay Run** - `POST /journeys/:id/trigger` (for testing delay nodes)
+- **Check Run Status** - `GET /journeys/runs/:runId`
+- **Run Not Found** - `GET /journeys/runs/:invalidId` (404 error testing)
+
+### Usage Tips
+
+- **Journey IDs**: Replace the placeholder journey IDs in trigger requests with actual IDs from your create journey responses
+- **Run IDs**: Replace placeholder run IDs in status check requests with actual run IDs from trigger responses
+- **Patient Context**: Modify the patient context in trigger requests to test different journey paths
+- **Base URL**: All requests are configured for `http://localhost:3000` (update if using different port)
 
 **Response Fields:**
 
