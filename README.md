@@ -76,17 +76,31 @@ A backend journey orchestration engine that executes patient care pathways with 
 ## 📁 Project Structure
 
 ```
-src/
-├── types/           # TypeScript interfaces
-├── db/              # Database setup & queries
-├── services/        # Business logic (executor)
-├── routes/          # API endpoints
-├── app.ts           # Express app setup
-└── server.ts        # Server entry point
-tests/
-├── unit/            # Unit tests (30 tests)
-└── integration/     # Integration tests (22 tests)
-examples/            # Sample journey JSON files
+├── src/
+│   ├── types/           # TypeScript interfaces
+│   ├── db/              # Database setup & queries
+│   ├── services/        # Business logic (executor)
+│   ├── routes/          # API endpoints
+│   ├── app.ts           # Express app setup
+│   └── server.ts        # Server entry point
+├── tests/
+│   ├── unit/            # Unit tests (30 tests)
+│   ├── integration/     # Integration tests (22 tests)
+│   ├── test-executor.sh # Manual executor testing script
+│   ├── test-get-endpoint.sh # Manual API endpoint testing script
+│   ├── test-journey.json # Sample test journey data
+│   └── TESTING.md       # Comprehensive testing documentation
+├── examples/            # Sample journey JSON files
+├── static/              # Static assets
+│   └── architecture.png # System architecture diagram
+├── MVP/                 # Production enhancement proposals
+│   ├── retry-enhancement-proposal.md           # Advanced retry mechanisms
+│   └── postgresql-connection-pooling-proposal.md # PostgreSQL connection pooling
+├── coverage/            # Test coverage reports
+├── package.json         # Dependencies and scripts
+├── tsconfig.json        # TypeScript configuration
+├── jest.config.js       # Jest testing configuration
+└── README.md           # Project documentation
 ```
 
 ## 🚀 Quick Start
