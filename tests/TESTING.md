@@ -26,7 +26,7 @@ Comprehensive test suite for the Patient Care Journey Engine with **52 tests** a
 
 Test individual functions with mocked dependencies - fast and isolated.
 
-#### Conditional Evaluator (`tests/unit/conditional.test.ts`) - 22 tests
+#### Conditional Evaluator (`unit/conditional.test.ts`) - 22 tests
 
 **What's tested:**
 
@@ -35,7 +35,7 @@ Test individual functions with mocked dependencies - fast and isolated.
 - Edge cases: zero, negatives, missing fields, unsupported operators
 - Type coercion for loose equality
 
-#### Executor Logic (`tests/unit/executor.test.ts`) - 8 tests
+#### Executor Logic (`unit/executor.test.ts`) - 8 tests
 
 **What's tested:**
 
@@ -50,7 +50,7 @@ Test individual functions with mocked dependencies - fast and isolated.
 
 Test complete flows with real database and Express app - validates E2E behavior.
 
-#### API Endpoints (`tests/integration/api.test.ts`) - 14 tests
+#### API Endpoints (`integration/api.test.ts`) - 14 tests
 
 **Endpoints tested:**
 
@@ -60,7 +60,7 @@ Test complete flows with real database and Express app - validates E2E behavior.
 - `GET /health` - Health check (1 test)
 - Error handling - 404s, malformed JSON (2 tests)
 
-#### Journey Execution (`tests/integration/journey-execution.test.ts`) - 8 tests
+#### Journey Execution (`integration/journey-execution.test.ts`) - 8 tests
 
 **Scenarios tested:**
 
@@ -73,7 +73,7 @@ Test complete flows with real database and Express app - validates E2E behavior.
 
 ## Example Journey Files
 
-Four example journeys in `examples/` directory:
+Four example journeys in `../examples/` directory:
 
 1. **`simple-message.json`** - Basic MESSAGE node journey
 2. **`conditional-age-based.json`** - Age-based branching (if age > 65)
@@ -82,14 +82,14 @@ Four example journeys in `examples/` directory:
 
 ## Code Coverage by Module
 
-| Module                     | Coverage   | Notes                                     |
-| -------------------------- | ---------- | ----------------------------------------- |
-| `src/app.ts`               | 90.47%     | Express setup, middleware, error handling |
-| `src/routes/journeys.ts`   | 78.09%     | API endpoints, validation                 |
-| `src/services/executor.ts` | 73.52%     | Journey execution engine                  |
-| `src/db/queries.ts`        | 67.5%      | CRUD operations                           |
-| `src/db/database.ts`       | 62.16%     | DB initialization                         |
-| **Overall**                | **74.09%** | **All major paths covered**               |
+| Module                        | Coverage   | Notes                                     |
+| ----------------------------- | ---------- | ----------------------------------------- |
+| `../src/app.ts`               | 90.47%     | Express setup, middleware, error handling |
+| `../src/routes/journeys.ts`   | 78.09%     | API endpoints, validation                 |
+| `../src/services/executor.ts` | 73.52%     | Journey execution engine                  |
+| `../src/db/queries.ts`        | 67.5%      | CRUD operations                           |
+| `../src/db/database.ts`       | 62.16%     | DB initialization                         |
+| **Overall**                   | **74.09%** | **All major paths covered**               |
 
 ## Running Tests
 
@@ -101,8 +101,8 @@ npm test
 npm test -- --coverage
 
 # Specific test suite
-npm test tests/unit
-npm test tests/integration
+npm test unit
+npm test integration
 
 # Watch mode for TDD
 npm test -- --watch
@@ -110,11 +110,11 @@ npm test -- --watch
 
 ## Test Configuration
 
-**Jest Setup (`jest.config.js`):**
+**Jest Setup (`../jest.config.js`):**
 
 - Preset: `ts-jest` for TypeScript
 - Test timeout: 10 seconds (for async operations)
-- Coverage from: `src/**/*.ts` (excludes `server.ts`)
+- Coverage from: `../src/**/*.ts` (excludes `server.ts`)
 
 **Key Dependencies:**
 

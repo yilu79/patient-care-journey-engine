@@ -71,7 +71,7 @@ A backend journey orchestration engine that executes patient care pathways with 
 - **Database**: SQLite with better-sqlite3 11.7.0 (zero-config, file-based)
 - **Testing**: Jest 30.2.0 + Supertest 7.1.4
 - **Async Processing**: setTimeout with in-memory tracking
-- **IDs**: UUID 8.3.2+ for unique identifiers (backward compatibility support)
+- **IDs**: UUID 8.3.2+ for unique identifiers (CommonJS compatible)
 
 ## 📁 Project Structure
 
@@ -96,7 +96,6 @@ A backend journey orchestration engine that executes patient care pathways with 
 ├── MVP/                 # Production enhancement proposals
 │   ├── retry-enhancement-proposal.md           # Advanced retry mechanisms
 │   └── postgresql-connection-pooling-proposal.md # PostgreSQL connection pooling
-├── coverage/            # Test coverage reports
 ├── package.json         # Dependencies and scripts
 ├── tsconfig.json        # TypeScript configuration
 ├── jest.config.js       # Jest testing configuration
@@ -463,15 +462,6 @@ For detailed testing documentation, see [TESTING.md](TESTING.md).
 - **Location**: `journeys.db` (auto-created)
 - **Schema**: Automatically initialized on startup
 - **Tables**: `journeys`, `journey_runs`
-
-### Project Setup Details
-
-- **TypeScript** with strict mode enabled
-- **Express.js** for REST API
-- **SQLite** with better-sqlite3 for database operations
-- **UUID v4** for ID generation (using uuid 8.3.2+)
-- **Comprehensive validation** for journey structure
-- **Type-safe database queries** with prepared statements
 
 ## 🔧 Configuration
 
