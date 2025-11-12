@@ -65,13 +65,13 @@ A backend journey orchestration engine that executes patient care pathways with 
 
 ### Technology Stack
 
-- **Language**: TypeScript 5.7.2 with strict mode
+- **Language**: TypeScript 5.7.2+ with strict mode
 - **Runtime**: Node.js 18+ (LTS)
-- **Framework**: Express.js 4.21.1
+- **Framework**: Express.js 4.21.1+
 - **Database**: SQLite with better-sqlite3 11.7.0 (zero-config, file-based)
 - **Testing**: Jest 30.2.0 + Supertest 7.1.4
 - **Async Processing**: setTimeout with in-memory tracking
-- **IDs**: UUID 8.3.2 for unique identifiers (backward compatibility support)
+- **IDs**: UUID 8.3.2+ for unique identifiers (backward compatibility support)
 
 ## 📁 Project Structure
 
@@ -393,30 +393,15 @@ When a journey is triggered via `POST /journeys/:id/trigger`:
 - **Status Updates:** After each node, `current_node_id` updated in database
 - **Error Handling:** Failed runs marked as `failed` with error logging
 
-## 🧪 Testing
+## 🧪 Manual Testing
 
-### Quick Start
+Test the API using curl commands:
 
-```bash
-# Run all tests
-npm test
-
-# Run with coverage report
-npm test -- --coverage
-
-# Run in watch mode
-npm test -- --watch
-```
-
-### Manual Testing with curl
-
-1. **Create a journey:**
-
-   ```bash
-   curl -X POST http://localhost:3000/journeys \
-     -H "Content-Type: application/json" \
-     -d @examples/simple-message.json
-   ```
+````bash
+# 1. Create a journey
+curl -X POST http://localhost:3000/journeys \
+  -H "Content-Type: application/json" \
+  -d @examples/simple-message.json
 
 2. **Trigger execution:**
 
@@ -424,28 +409,13 @@ npm test -- --watch
    curl -X POST http://localhost:3000/journeys/{JOURNEY_ID}/trigger \
      -H "Content-Type: application/json" \
      -d '{"patient_context":{"id":"patient-123","age":70,"language":"en","condition":"hip_replacement"}}'
-   ```
+````
 
-3. **Check status:**
-   ```bash
-   curl http://localhost:3000/journeys/runs/{RUN_ID}
-   ```
+# 3. Check status
 
-### Test Suite Overview
+curl http://localhost:3000/journeys/runs/{RUN_ID}
 
-```bash
-52 tests across 4 suites - all passing ✅
-├── Unit Tests (30)
-│   ├── Conditional evaluator (22 tests)
-│   └── Executor logic (8 tests)
-└── Integration Tests (22)
-    ├── API endpoints (14 tests)
-    └── Journey execution E2E (8 tests)
-
-Code Coverage: 74% overall
-```
-
-For detailed testing documentation, see [TESTING.md](TESTING.md).
+````
 
 ## 🛠️ Development
 
@@ -460,37 +430,18 @@ For detailed testing documentation, see [TESTING.md](TESTING.md).
 
 ### Testing
 
-The project includes a comprehensive test suite with **52 tests** achieving **74% code coverage**:
+Comprehensive test suite with 52 tests and 74% coverage:
 
-- **30 Unit Tests**: Conditional evaluator, executor logic, error handling
-- **22 Integration Tests**: API endpoints, E2E journey execution flows
-- **Test Framework**: Jest 30.2.0 with ts-jest for TypeScript
-- **API Testing**: Supertest for HTTP endpoint validation
-
-**Test Coverage:**
-
-- Statements: 74.09%
-- Branches: 70.5%
-- Functions: 70.83%
-- Lines: 75%
-
-For detailed testing documentation, see [TESTING.md](TESTING.md).
-
-**Quick Test Commands:**
+- **30 Unit Tests**: Conditional evaluator, executor logic
+- **22 Integration Tests**: API endpoints, E2E flows
 
 ```bash
-# Run all tests
-npm test
+npm test              # Run all tests
+npm run test:coverage # Run with coverage report
+npm run test:watch    # Watch mode for development
+````
 
-# Run with coverage
-npm test -- --coverage
-
-# Run specific test file
-npm test tests/unit/conditional.test.ts
-
-# Watch mode for development
-npm test -- --watch
-```
+For detailed testing documentation, see [TESTING.md](TESTING.md).
 
 ### Database
 
@@ -501,12 +452,10 @@ npm test -- --watch
 
 ### Project Setup Details
 
-The project uses:
-
 - **TypeScript** with strict mode enabled
 - **Express.js** for REST API
-- **better-sqlite3** for database operations
-- **UUID v4** for ID generation
+- **SQLite** with better-sqlite3 for database operations
+- **UUID v4** for ID generation (using uuid 8.3.2+)
 - **Comprehensive validation** for journey structure
 - **Type-safe database queries** with prepared statements
 
@@ -607,68 +556,47 @@ The API provides detailed error responses:
    - No nested conditions
    - **Future Enhancement:** Expression language support
 
-## ✅ Project Status
+## ⚠️ Production Readiness Notice
 
-**All objectives completed:**
+**This implementation is designed for prototype and development environments only.** For production deployment, the following epics/stories must be completed to ensure availability, scalability, stability, monitoring, and security:
 
-- ✅ TypeScript backend with SQLite database
-- ✅ REST API with 3 endpoints (create, trigger, status)
-- ✅ Journey executor supporting MESSAGE, CONDITIONAL, DELAY nodes
-- ✅ Comprehensive test suite (52 tests, 74% coverage)
-- ✅ Complete documentation
+### Required Production Epics
 
-See [PROJECT_COMPLETION.md](PROJECT_COMPLETION.md) for detailed implementation timeline.
+- **Epic 1: High Availability & Scalability**
 
-## 🔮 Future Enhancements
+  - Implement distributed job queue (Bull/BullMQ + Redis)
+  - Database migration from SQLite to PostgreSQL/MongoDB
+  - Database [connection pooling](./MVP/postgresql-connection-pooling-proposal.md) for high concurrency support
+  - Horizontal scaling with load balancing
+  - Container orchestration (Kubernetes/Docker Swarm)
 
-### Production Readiness
+- **Epic 2: Stability & Reliability**
 
-- **Persistent Job Queue:** Replace setTimeout with Bull/BullMQ + Redis
-- **Database Migration:** Move from SQLite to PostgreSQL for scalability
-- **Horizontal Scaling:** Support multiple server instances
-- **Monitoring:** Add APM, metrics, and health checks
-- **Authentication:** Add API key or OAuth authentication
-- **Rate Limiting:** Protect endpoints from abuse
+  - Comprehensive error handling and [retry mechanisms](./MVP/retry-enhancement-proposal.md) (e.g. automatic retry with exponential backoff)
+  - Circuit breaker patterns for external dependencies
+  - Graceful shutdown and restart capabilities
+  - Data backup and disaster recovery procedures
 
-### Advanced Features
+- **Epic 3: Monitoring & Observability**
 
-- **Webhooks:** Call external URLs for MESSAGE nodes
-- **Journey Versioning:** Track and manage journey versions
-- **Parallel Execution:** Support concurrent branch processing
-- **Complex Conditions:** AND/OR logic, nested conditions
-- **Retry Logic:** Automatic retry with exponential backoff
-- **Run History:** Query all runs for a journey
-- **Journey Cancellation:** DELETE /journeys/runs/:runId endpoint
+  - Application Performance Monitoring (APM)
+  - Structured logging with centralized log aggregation
+  - Health check endpoints and service discovery
+  - Metrics collection and alerting (Prometheus/Grafana)
 
-## 🧪 Test Results
+- **Epic 4: Security & Compliance**
 
-### Executor Tests (Validated)
+  - Authentication and authorization (OAuth 2.0/JWT)
+  - API rate limiting and DDoS protection
+  - Data encryption at rest and in transit
+  - Security scanning and vulnerability assessments
 
-✅ **MESSAGE Node Test:**
-
-- Messages logged to console with patient ID
-- Correct continuation to next node
-- Terminal nodes mark journey as completed
-
-✅ **CONDITIONAL Node Test:**
-
-- Senior patient (age=70): Correctly branched to `on_true_next_node_id`
-- Young patient (age=45): Correctly branched to `on_false_next_node_id`
-- Condition evaluation logged and accurate
-
-✅ **DELAY Node Test:**
-
-- 3-second delay scheduled correctly
-- Execution resumed after delay
-- Timestamps show correct 3-second gap (created_at → updated_at)
-- Timeout tracked in memory successfully
-
-✅ **Error Handling:**
-
-- Invalid run IDs handled gracefully
-- Missing nodes fail journey with proper status
-- Database errors caught and logged
+- **Epic 5: DevOps & Infrastructure**
+  - CI/CD pipeline with automated testing
+  - Infrastructure as Code (Terraform/CloudFormation)
+  - Environment configuration management
+  - Blue-green deployment strategies
 
 ## 📄 License
 
-ISC
+MIT
