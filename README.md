@@ -111,6 +111,8 @@ A backend journey orchestration engine that executes patient care pathways with 
 
 ### Installation
 
+> 📹 **Video Guide Available**: For a visual walkthrough of the setup process and API testing, watch our [Setup and API Call Demo Video](https://drive.google.com/file/d/12-Dxr7r6wjWIvengl09o4Zzrv0dH68q6/view?usp=sharing)
+
 1. **Clone and setup the project:**
 
    ```bash
