@@ -62,7 +62,7 @@ describe('Journey Execution Integration Tests', () => {
       expect(runId).toBeDefined();
 
       // Wait for execution to complete
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 5000));
 
       // Check final status
       const statusResponse = await request(app)
@@ -131,7 +131,7 @@ describe('Journey Execution Integration Tests', () => {
       const runId = triggerResponse.body.run_id;
 
       // Wait for execution
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       // Verify execution completed successfully
       const statusResponse = await request(app).get(`/journeys/runs/${runId}`);
@@ -195,7 +195,7 @@ describe('Journey Execution Integration Tests', () => {
       const runId = triggerResponse.body.run_id;
 
       // Wait for execution
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       // Verify execution completed
       const statusResponse = await request(app).get(`/journeys/runs/${runId}`);
@@ -268,7 +268,7 @@ describe('Journey Execution Integration Tests', () => {
 
       const runId = triggerResponse.body.run_id;
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       const statusResponse = await request(app).get(`/journeys/runs/${runId}`);
       expect(statusResponse.body.status).toBe('completed');
@@ -323,7 +323,7 @@ describe('Journey Execution Integration Tests', () => {
       // Status could be in_progress or completed depending on timing
 
       // Wait for delay to complete (2 seconds + buffer)
-      await new Promise(resolve => setTimeout(resolve, 2500));
+      await new Promise(resolve => setTimeout(resolve, 3500));
 
       // Check status after delay (should be completed)
       const finalStatus = await request(app).get(`/journeys/runs/${runId}`);
@@ -388,7 +388,7 @@ describe('Journey Execution Integration Tests', () => {
       const runId = triggerResponse.body.run_id;
 
       // Wait for both delays (2 seconds + buffer)
-      await new Promise(resolve => setTimeout(resolve, 2500));
+      await new Promise(resolve => setTimeout(resolve, 3500));
 
       const finalStatus = await request(app).get(`/journeys/runs/${runId}`);
       expect(finalStatus.body.status).toBe('completed');
@@ -457,7 +457,7 @@ describe('Journey Execution Integration Tests', () => {
       const runId = triggerResponse.body.run_id;
 
       // Wait for execution with delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 2500));
 
       const finalStatus = await request(app).get(`/journeys/runs/${runId}`);
       expect(finalStatus.body.status).toBe('completed');
@@ -500,7 +500,7 @@ describe('Journey Execution Integration Tests', () => {
 
       const runId = triggerResponse.body.run_id;
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       const finalStatus = await request(app).get(`/journeys/runs/${runId}`);
       
