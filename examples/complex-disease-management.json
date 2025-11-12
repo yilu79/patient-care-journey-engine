@@ -16,8 +16,8 @@
         "operator": "=",
         "value": "diabetes"
       },
-      "true_node_id": "diabetes_path",
-      "false_node_id": "check_hypertension"
+      "on_true_next_node_id": "diabetes_path",
+      "on_false_next_node_id": "check_hypertension"
     },
     {
       "id": "check_hypertension",
@@ -27,8 +27,8 @@
         "operator": "=",
         "value": "hypertension"
       },
-      "true_node_id": "hypertension_path",
-      "false_node_id": "general_path"
+      "on_true_next_node_id": "hypertension_path",
+      "on_false_next_node_id": "general_path"
     },
     {
       "id": "diabetes_path",

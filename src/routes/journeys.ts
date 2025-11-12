@@ -55,12 +55,12 @@ function validateJourneyStructure(journey: CreateJourneyRequest): { isValid: boo
       // Validate node-specific requirements
       switch (node.type) {
         case 'MESSAGE':
-          const messageNode = node as any;
-          if (!messageNode.message) {
+          const actionNode = node as any;
+          if (!actionNode.message) {
             errors.push(`MESSAGE node '${node.id}' must have a message`);
           }
-          if (messageNode.next_node_id && !nodeIds.has(messageNode.next_node_id)) {
-            errors.push(`MESSAGE node '${node.id}' references non-existent next_node_id '${messageNode.next_node_id}'`);
+          if (actionNode.next_node_id && !nodeIds.has(actionNode.next_node_id)) {
+            errors.push(`MESSAGE node '${node.id}' references non-existent next_node_id '${actionNode.next_node_id}'`);
           }
           break;
 
@@ -90,11 +90,11 @@ function validateJourneyStructure(journey: CreateJourneyRequest): { isValid: boo
               errors.push(`CONDITIONAL node '${node.id}' condition must have a value`);
             }
           }
-          if (conditionalNode.true_node_id && !nodeIds.has(conditionalNode.true_node_id)) {
-            errors.push(`CONDITIONAL node '${node.id}' references non-existent true_node_id '${conditionalNode.true_node_id}'`);
+          if (conditionalNode.on_true_next_node_id && !nodeIds.has(conditionalNode.on_true_next_node_id)) {
+            errors.push(`CONDITIONAL node '${node.id}' references non-existent on_true_next_node_id '${conditionalNode.on_true_next_node_id}'`);
           }
-          if (conditionalNode.false_node_id && !nodeIds.has(conditionalNode.false_node_id)) {
-            errors.push(`CONDITIONAL node '${node.id}' references non-existent false_node_id '${conditionalNode.false_node_id}'`);
+          if (conditionalNode.on_false_next_node_id && !nodeIds.has(conditionalNode.on_false_next_node_id)) {
+            errors.push(`CONDITIONAL node '${node.id}' references non-existent on_false_next_node_id '${conditionalNode.on_false_next_node_id}'`);
           }
           break;
       }
@@ -182,9 +182,9 @@ router.post('/:journeyId/trigger', (req: Request, res: Response) => {
 
     // Validate patient context has required fields
     const { patient_context } = triggerData;
-    if (!patient_context.patient_id) {
+    if (!patient_context.id) {
       return res.status(400).json({
-        error: 'patient_context must include patient_id'
+        error: 'patient_context must include id'
       });
     }
 
@@ -211,7 +211,7 @@ router.post('/:journeyId/trigger', (req: Request, res: Response) => {
     // Store run in database
     journeyQueries.insertJourneyRun(journeyRun);
 
-    console.log(`🚀 Journey execution started: ${journey.name} for patient ${patient_context.patient_id} (Run ID: ${runId})`);
+    console.log(`🚀 Journey execution started: ${journey.name} for patient ${patient_context.id} (Run ID: ${runId})`);
 
     // Trigger async executor (don't wait for completion)
     executeJourney(runId).catch(error => {

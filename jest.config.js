@@ -11,6 +11,7 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'html'],
   verbose: true,
   testTimeout: 10000, // 10 seconds for async tests with delays
+  maxWorkers: 1, // Run tests serially to avoid database race conditions
   moduleNameMapper: {
     '^uuid$': '<rootDir>/node_modules/uuid/dist/index.js',
   },

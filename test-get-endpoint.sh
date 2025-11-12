@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# RevelAI Journey Engine - GET Endpoint Validation Test Suite
+# Patient Care Journey Engine - GET Endpoint Validation Test Suite
 # Tests both happy-path and negative scenarios
 
 API_BASE="http://localhost:3000"
@@ -9,7 +9,7 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo "🧪 RevelAI Journey Engine - GET Endpoint Test Suite"
+echo "🧪 Patient Care Journey Engine - GET Endpoint Test Suite"
 echo "=================================================="
 
 # Function to test HTTP response

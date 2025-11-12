@@ -1,5 +1,5 @@
 {
-  "name": "revelai-journey-engine",
+  "name": "patient-care-journey-engine",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Patient Care Journey Engine - A TypeScript-based journey orchestration system for patient care workflows",
   "dependencies": {
     "better-sqlite3": "^12.4.1",
     "express": "^5.1.0",

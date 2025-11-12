@@ -24,7 +24,7 @@ process.on('SIGINT', () => {
 });
 
 const server = app.listen(PORT, () => {
-  console.log('🚀 RevelAI Journey Engine started successfully!');
+  console.log('🚀 Patient Care Journey Engine started successfully!');
   console.log(`📚 API Server running on: http://localhost:${PORT}`);
   console.log(`🏥 Health check available at: http://localhost:${PORT}/health`);
   console.log(`📋 Available endpoints:`);

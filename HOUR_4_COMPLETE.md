@@ -1,4 +1,4 @@
-# 🎉 RevelAI Journey Engine - COMPLETE
+# 🎉 Patient Care Journey Engine - COMPLETE
 
 ## ✅ Project Status: DELIVERED
 
@@ -126,7 +126,7 @@ All files     |   74.09 |     70.5 |   70.83 |      75 |
 ### 1. Installation
 
 ```bash
-cd revelai-journey-engine
+cd patient-care-journey-engine
 npm install
 ```
 
@@ -180,7 +180,7 @@ curl http://localhost:3000/journeys/runs/{RUN_ID}
 ## 📁 Project Structure
 
 ```
-revelai-journey-engine/
+patient-care-journey-engine/
 ├── src/
 │   ├── types/
 │   │   └── index.ts              # Type definitions
@@ -430,7 +430,7 @@ This project demonstrates:
 
 ---
 
-_🎉 Congratulations on completing the RevelAI Journey Engine!_
+_🎉 Congratulations on completing the Patient Care Journey Engine!_
 
 _Generated: November 11, 2025_  
 _Status: ✅ All objectives achieved_  

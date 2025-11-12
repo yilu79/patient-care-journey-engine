@@ -25,9 +25,10 @@ describe('Journey Executor', () => {
 
   describe('evaluateCondition', () => {
     const context: PatientContext = {
-      patient_id: 'test-001',
+      id: 'test-001',
       age: 70,
-      condition: 'diabetes',
+      language: 'en',
+      condition: 'hip_replacement',
     };
 
     it('should correctly evaluate all operators', () => {
@@ -59,7 +60,7 @@ describe('Journey Executor', () => {
       const mockRun: JourneyRun = {
         id: 'run-1',
         journey_id: 'journey-1',
-        patient_context: { patient_id: 'patient-1', age: 50 },
+        patient_context: { id: 'patient-1', age: 50, language: 'en' as const, condition: 'hip_replacement' as const },
         status: 'in_progress',
         current_node_id: 'msg1',
         created_at: new Date(),
@@ -101,7 +102,7 @@ describe('Journey Executor', () => {
       const mockRun: JourneyRun = {
         id: 'run-1',
         journey_id: 'journey-1',
-        patient_context: { patient_id: 'patient-1', age: 50 },
+        patient_context: { id: 'patient-1', age: 50, language: 'en' as const, condition: 'knee_replacement' as const },
         status: 'in_progress',
         current_node_id: 'msg1',
         created_at: new Date(),
@@ -140,8 +141,8 @@ describe('Journey Executor', () => {
               operator: '>',
               value: 65,
             },
-            true_node_id: 'msg_senior',
-            false_node_id: 'msg_general',
+            on_true_next_node_id: 'msg_senior',
+            on_false_next_node_id: 'msg_general',
           },
           {
             id: 'msg_senior',
@@ -155,7 +156,7 @@ describe('Journey Executor', () => {
       const mockRun: JourneyRun = {
         id: 'run-1',
         journey_id: 'journey-1',
-        patient_context: { patient_id: 'patient-1', age: 70 },
+        patient_context: { id: 'patient-1', age: 70, language: 'es' as const, condition: 'hip_replacement' as const },
         status: 'in_progress',
         current_node_id: 'cond1',
         created_at: new Date(),
@@ -192,8 +193,8 @@ describe('Journey Executor', () => {
               operator: '>',
               value: 65,
             },
-            true_node_id: 'msg_senior',
-            false_node_id: 'msg_general',
+            on_true_next_node_id: 'msg_senior',
+            on_false_next_node_id: 'msg_general',
           },
           {
             id: 'msg_general',
@@ -207,7 +208,7 @@ describe('Journey Executor', () => {
       const mockRun: JourneyRun = {
         id: 'run-1',
         journey_id: 'journey-1',
-        patient_context: { patient_id: 'patient-1', age: 45 },
+        patient_context: { id: 'patient-1', age: 45, language: 'en' as const, condition: 'knee_replacement' as const },
         status: 'in_progress',
         current_node_id: 'cond1',
         created_at: new Date(),
@@ -247,7 +248,7 @@ describe('Journey Executor', () => {
       const mockRun: JourneyRun = {
         id: 'run-1',
         journey_id: 'journey-1',
-        patient_context: { patient_id: 'patient-1', age: 50 },
+        patient_context: { id: 'patient-1', age: 50, language: 'es' as const, condition: 'hip_replacement' as const },
         status: 'in_progress',
         current_node_id: 'delay1',
         created_at: new Date(),
@@ -279,7 +280,7 @@ describe('Journey Executor', () => {
       const mockRun: JourneyRun = {
         id: 'run-1',
         journey_id: 'non-existent',
-        patient_context: { patient_id: 'patient-1', age: 50 },
+        patient_context: { id: 'patient-1', age: 50, language: 'en' as const, condition: 'knee_replacement' as const },
         status: 'in_progress',
         current_node_id: 'msg1',
         created_at: new Date(),

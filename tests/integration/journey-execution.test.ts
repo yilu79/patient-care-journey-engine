@@ -49,8 +49,10 @@ describe('Journey Execution Integration Tests', () => {
       // Trigger execution
       const triggerData = {
         patient_context: {
-          patient_id: 'patient-001',
+          id: 'patient-001',
           age: 50,
+          language: 'en' as const,
+          condition: 'hip_replacement' as const,
         },
       };
 
@@ -61,14 +63,13 @@ describe('Journey Execution Integration Tests', () => {
       const runId = triggerResponse.body.run_id;
       expect(runId).toBeDefined();
 
-      // Wait for execution to complete
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      // Wait for execution to complete (3 MESSAGE nodes execute quickly)
+      await new Promise(resolve => setTimeout(resolve, 2500));
 
       // Check final status
-      const statusResponse = await request(app)
-        .get(`/journeys/runs/${runId}`)
-        .expect(200);
-
+      const statusResponse = await request(app).get(`/journeys/runs/${runId}`);
+      
+      expect(statusResponse.status).toBe(200);
       expect(statusResponse.body).toBeDefined();
       expect(statusResponse.body.status).toBe('completed');
       expect(statusResponse.body.current_node_id).toBeNull();
@@ -95,8 +96,8 @@ describe('Journey Execution Integration Tests', () => {
               operator: '>',
               value: 65,
             },
-            true_node_id: 'senior_msg',
-            false_node_id: 'general_msg',
+            on_true_next_node_id: 'senior_msg',
+            on_false_next_node_id: 'general_msg',
           },
           {
             id: 'senior_msg',
@@ -119,8 +120,10 @@ describe('Journey Execution Integration Tests', () => {
       // Trigger with senior patient (age > 65)
       const triggerData = {
         patient_context: {
-          patient_id: 'senior-patient',
+          id: 'senior-patient',
           age: 70,
+          language: 'en' as const,
+          condition: 'hip_replacement' as const,
         },
       };
 
@@ -159,8 +162,8 @@ describe('Journey Execution Integration Tests', () => {
               operator: '>',
               value: 65,
             },
-            true_node_id: 'senior_msg',
-            false_node_id: 'general_msg',
+            on_true_next_node_id: 'senior_msg',
+            on_false_next_node_id: 'general_msg',
           },
           {
             id: 'senior_msg',
@@ -183,8 +186,10 @@ describe('Journey Execution Integration Tests', () => {
       // Trigger with young patient (age <= 65)
       const triggerData = {
         patient_context: {
-          patient_id: 'young-patient',
+          id: 'young-patient',
           age: 45,
+          language: 'es' as const,
+          condition: 'knee_replacement' as const,
         },
       };
 
@@ -216,8 +221,8 @@ describe('Journey Execution Integration Tests', () => {
               operator: '>=',
               value: 18,
             },
-            true_node_id: 'cond2',
-            false_node_id: 'minor_msg',
+            on_true_next_node_id: 'cond2',
+            on_false_next_node_id: 'minor_msg',
           },
           {
             id: 'cond2',
@@ -227,8 +232,8 @@ describe('Journey Execution Integration Tests', () => {
               operator: '>=',
               value: 65,
             },
-            true_node_id: 'senior_msg',
-            false_node_id: 'adult_msg',
+            on_true_next_node_id: 'senior_msg',
+            on_false_next_node_id: 'adult_msg',
           },
           {
             id: 'minor_msg',
@@ -257,8 +262,10 @@ describe('Journey Execution Integration Tests', () => {
       // Test adult path (18 <= age < 65)
       const triggerData = {
         patient_context: {
-          patient_id: 'adult-patient',
+          id: 'adult-patient',
           age: 40,
+          language: 'en' as const,
+          condition: 'hip_replacement' as const,
         },
       };
 
@@ -307,8 +314,10 @@ describe('Journey Execution Integration Tests', () => {
 
       const triggerData = {
         patient_context: {
-          patient_id: 'delay-test-patient',
+          id: 'delay-test-patient',
           age: 50,
+          language: 'en' as const,
+          condition: 'knee_replacement' as const,
         },
       };
 
@@ -376,8 +385,10 @@ describe('Journey Execution Integration Tests', () => {
 
       const triggerData = {
         patient_context: {
-          patient_id: 'multi-delay-patient',
+          id: 'multi-delay-patient',
           age: 50,
+          language: 'es' as const,
+          condition: 'hip_replacement' as const,
         },
       };
 
@@ -415,8 +426,8 @@ describe('Journey Execution Integration Tests', () => {
               operator: '>',
               value: 65,
             },
-            true_node_id: 'delay_senior',
-            false_node_id: 'final_msg',
+            on_true_next_node_id: 'delay_senior',
+            on_false_next_node_id: 'final_msg',
           },
           {
             id: 'delay_senior',
@@ -445,8 +456,10 @@ describe('Journey Execution Integration Tests', () => {
       // Test with senior patient
       const triggerData = {
         patient_context: {
-          patient_id: 'complex-test-patient',
+          id: 'complex-test-patient',
           age: 70,
+          language: 'en' as const,
+          condition: 'knee_replacement' as const,
         },
       };
 
@@ -485,12 +498,10 @@ describe('Journey Execution Integration Tests', () => {
 
       const complexContext = {
         patient_context: {
-          patient_id: 'patient-999',
+          id: 'patient-999',
           age: 55,
-          condition: 'hypertension',
-          medications: ['med1', 'med2'],
-          score: 87.5,
-          notes: 'Custom patient notes',
+          language: 'es' as const,
+          condition: 'hip_replacement' as const,
         },
       };
 

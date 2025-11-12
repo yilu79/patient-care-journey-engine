@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 /**
- * Database connection singleton for RevelAI Journey Engine
+ * Database connection singleton for Patient Care Journey Engine
  * Uses SQLite with better-sqlite3 for zero-config persistence
  */
 class DatabaseManager {

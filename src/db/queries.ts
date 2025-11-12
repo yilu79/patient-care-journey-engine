@@ -3,7 +3,7 @@ import { Journey, JourneyRun, PatientContext, JourneyNode } from '../types/journ
 import type { Statement } from 'better-sqlite3';
 
 /**
- * Prepared SQL statements for RevelAI Journey Engine
+ * Prepared SQL statements for Patient Care Journey Engine
  * All database operations with type safety and performance optimization
  */
 export class JourneyQueries {

@@ -18,7 +18,7 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
     timestamp: new Date().toISOString(),
-    service: 'RevelAI Journey Engine'
+    service: 'Patient Care Journey Engine'
   });
 });
 

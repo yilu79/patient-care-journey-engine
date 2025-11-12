@@ -2,7 +2,7 @@
 
 ## Overview
 
-Comprehensive test suite for the RevelAI Journey Engine with **52 tests** achieving **74% code coverage**.
+Comprehensive test suite for the Patient Care Journey Engine with **52 tests** achieving **74% code coverage**.
 
 ## Quick Stats
 

@@ -25,8 +25,8 @@ JOURNEY_RESPONSE=$(curl -s -X POST http://localhost:3000/journeys \
           "operator": ">",
           "value": 65
         },
-        "true_node_id": "msg_senior",
-        "false_node_id": "msg_general"
+        "on_true_next_node_id": "msg_senior",
+        "on_false_next_node_id": "msg_general"
       },
       {
         "id": "msg_senior",

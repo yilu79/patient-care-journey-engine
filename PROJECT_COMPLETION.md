@@ -1,4 +1,4 @@
-# RevelAI Journey Engine - Project Completion Summary
+# RevelAI Patient Journey Engine - Project Completion Summary
 
 ## 📊 Project Overview
 
@@ -54,7 +54,7 @@ Successfully completed a full-stack backend journey orchestration engine in **un
 - ✅ Project initialized with npm, TypeScript, Express
 - ✅ Complete type definitions in `src/types/`
   - Journey, JourneyRun, PatientContext
-  - MessageNode, ConditionalNode, DelayNode
+  - ActionNode, ConditionalNode, DelayNode
 - ✅ SQLite database setup with better-sqlite3
 - ✅ Database schema with proper indexes
 - ✅ Type-safe query functions in `src/db/queries.ts`
@@ -566,7 +566,7 @@ This project is ready for:
 
 **Deliverables Location**:
 
-- Code: `revelai-journey-engine/` directory
+- Code: `revelai-patient-journey-engine/` directory
 - Tests: `tests/` directory
 - Examples: `examples/` directory
 - Docs: README.md, TESTING.md, PROJECT_COMPLETION.md

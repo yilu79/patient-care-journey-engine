@@ -1,4 +1,4 @@
-import { JourneyRun, JourneyNode, MessageNode, DelayNode, ConditionalNode, PatientContext, Journey } from '../types/journey';
+import { JourneyRun, JourneyNode, ActionNode, DelayNode, ConditionalNode, PatientContext, Journey } from '../types/journey';
 import { journeyQueries } from '../db/queries';
 
 // In-memory state management for active delays
@@ -41,15 +41,15 @@ export function evaluateCondition(
 }
 
 /**
- * Process a MESSAGE node
+ * Process a MESSAGE node (ActionNode)
  * Logs the message and moves to the next node
  */
-async function processMessageNode(
+async function processActionNode(
   run: JourneyRun,
-  node: MessageNode,
+  node: ActionNode,
   journey: Journey
 ): Promise<void> {
-  console.log(`[MESSAGE] Sending message to patient ${run.patient_context.patient_id}: ${node.message}`);
+  console.log(`[MESSAGE] Sending message to patient ${run.patient_context.id}: ${node.message}`);
 
   // Move to next node or complete journey
   if (node.next_node_id) {
@@ -86,7 +86,7 @@ async function processConditionalNode(
   console.log(`[CONDITIONAL] Result: ${conditionResult}`);
 
   // Determine next node based on condition result
-  const nextNodeId = conditionResult ? node.true_node_id : node.false_node_id;
+  const nextNodeId = conditionResult ? node.on_true_next_node_id : node.on_false_next_node_id;
 
   if (nextNodeId) {
     run.current_node_id = nextNodeId;
@@ -160,7 +160,7 @@ async function processNode(
 ): Promise<void> {
   switch (node.type) {
     case 'MESSAGE':
-      await processMessageNode(run, node as MessageNode, journey);
+      await processActionNode(run, node as ActionNode, journey);
       break;
     case 'CONDITIONAL':
       await processConditionalNode(run, node as ConditionalNode, journey);

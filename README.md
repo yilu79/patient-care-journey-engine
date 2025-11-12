@@ -1,4 +1,4 @@
-# RevelAI Journey Engine
+# Patient Care Journey Engine
 
 A backend journey orchestration engine that executes patient care pathways with support for messages, delays, and conditional branching.
 
@@ -8,7 +8,7 @@ A backend journey orchestration engine that executes patient care pathways with 
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                         RevelAI Journey Engine                           │
+│                    Patient Care Journey Engine                           │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌──────────────┐         ┌─────────────────────────────────────────────┐
@@ -26,7 +26,7 @@ A backend journey orchestration engine that executes patient care pathways with 
                          │  │  ┌─────────────────────────────────┐ │  │
                          │  │  │  Journey Executor               │ │  │
                          │  │  │  • evaluateCondition()          │ │  │
-                         │  │  │  • processMessageNode()         │ │  │
+                         │  │  │  • processActionNode()          │ │  │
                          │  │  │  • processConditionalNode()     │ │  │
                          │  │  │  • processDelayNode()           │ │  │
                          │  │  │  • executeJourney()             │ │  │
@@ -150,7 +150,7 @@ examples/            # Sample journey JSON files
 
    ```bash
    git clone <repository-url>
-   cd revelai-journey-engine
+   cd patient-care-journey-engine
    npm install
    ```
 
@@ -162,7 +162,7 @@ examples/            # Sample journey JSON files
 
 3. **The server will start on port 3000:**
    ```
-   🚀 RevelAI Journey Engine started successfully!
+   🚀 Patient Care Journey Engine started successfully!
    📚 API Server running on: http://localhost:3000
    🏥 Health check available at: http://localhost:3000/health
    ```
@@ -181,7 +181,7 @@ GET /health
 {
   "status": "healthy",
   "timestamp": "2025-11-11T19:36:21.135Z",
-  "service": "RevelAI Journey Engine"
+  "service": "Patient Care Journey Engine"
 }
 ```
 
@@ -213,8 +213,8 @@ Content-Type: application/json
         "operator": ">",
         "value": 65
       },
-      "true_node_id": "senior_message",
-      "false_node_id": "general_message"
+      "on_true_next_node_id": "senior_message",
+      "on_false_next_node_id": "general_message"
     },
     {
       "id": "senior_message",
@@ -252,9 +252,10 @@ Content-Type: application/json
 ```json
 {
   "patient_context": {
-    "patient_id": "patient-123",
+    "id": "patient-123",
     "age": 70,
-    "condition": "diabetes"
+    "language": "en",
+    "condition": "hip_replacement"
   }
 }
 ```
@@ -284,9 +285,10 @@ GET /journeys/runs/:runId
   "id": "445ccbdc-49ba-4b21-8354-8a1e55e52470",
   "journey_id": "97b1a13b-9428-4094-8832-7983e1699470",
   "patient_context": {
-    "patient_id": "patient-456",
+    "id": "patient-456",
     "age": 45,
-    "condition": "hypertension"
+    "language": "es",
+    "condition": "knee_replacement"
   },
   "status": "in_progress",
   "current_node_id": "welcome",
@@ -370,8 +372,8 @@ Branches based on patient context evaluation.
     "operator": ">",
     "value": 65
   },
-  "true_node_id": "senior_path",
-  "false_node_id": "general_path"
+  "on_true_next_node_id": "senior_path",
+  "on_false_next_node_id": "general_path"
 }
 ```
 
@@ -384,7 +386,7 @@ Branches based on patient context evaluation.
 
 - Evaluates condition against patient context
 - Supports nested field paths (e.g., `patient.age` or just `age`)
-- Branches to `true_node_id` or `false_node_id` based on result
+- Branches to `on_true_next_node_id` or `on_false_next_node_id` based on result
 - Logs evaluation result to console
 - Continues to selected branch automatically
 
@@ -469,7 +471,7 @@ npm test -- --watch
    ```bash
    curl -X POST http://localhost:3000/journeys/{JOURNEY_ID}/trigger \
      -H "Content-Type: application/json" \
-     -d '{"patient_context":{"patient_id":"patient-123","age":70}}'
+     -d '{"patient_context":{"id":"patient-123","age":70,"language":"en","condition":"hip_replacement"}}'
    ```
 
 3. **Check status:**
@@ -698,8 +700,8 @@ See [PROJECT_COMPLETION.md](PROJECT_COMPLETION.md) for detailed implementation t
 
 ✅ **CONDITIONAL Node Test:**
 
-- Senior patient (age=70): Correctly branched to `true_node_id`
-- Young patient (age=45): Correctly branched to `false_node_id`
+- Senior patient (age=70): Correctly branched to `on_true_next_node_id`
+- Young patient (age=45): Correctly branched to `on_false_next_node_id`
 - Condition evaluation logged and accurate
 
 ✅ **DELAY Node Test:**

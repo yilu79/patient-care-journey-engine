@@ -1,13 +1,13 @@
-// Core journey orchestration types for RevelAI Journey Engine
+// Core journey orchestration types for Patient Care Journey Engine
 
 /**
  * Patient context containing patient information for journey execution
  */
 export interface PatientContext {
-  patient_id: string;
+  id: string;
   age: number;
-  condition?: string;
-  [key: string]: any; // Allow additional dynamic fields
+  language: 'en' | 'es';
+  condition: 'hip_replacement' | 'knee_replacement';
 }
 
 /**
@@ -19,9 +19,9 @@ export interface BaseJourneyNode {
 }
 
 /**
- * Message node - sends a message to the patient
+ * An action to be performed, like sending an SMS or making a call
  */
-export interface MessageNode extends BaseJourneyNode {
+export interface ActionNode extends BaseJourneyNode {
   type: 'MESSAGE';
   message: string;
   next_node_id: string | null; // null indicates end of journey
@@ -40,7 +40,7 @@ export interface DelayNode extends BaseJourneyNode {
  * Condition for conditional nodes
  */
 export interface Condition {
-  field: string; // e.g., 'age', 'patient.age', 'condition'
+  field: string; // e.g., 'patient.age', 'patient.condition'
   operator: '>' | '<' | '>=' | '<=' | '=' | '!=';
   value: any; // The value to compare against
 }
@@ -51,14 +51,14 @@ export interface Condition {
 export interface ConditionalNode extends BaseJourneyNode {
   type: 'CONDITIONAL';
   condition: Condition;
-  true_node_id: string | null;
-  false_node_id: string | null;
+  on_true_next_node_id: string | null;
+  on_false_next_node_id: string | null;
 }
 
 /**
  * Union type for all journey node types
  */
-export type JourneyNode = MessageNode | DelayNode | ConditionalNode;
+export type JourneyNode = ActionNode | DelayNode | ConditionalNode;
 
 /**
  * Complete journey definition

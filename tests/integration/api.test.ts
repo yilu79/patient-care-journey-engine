@@ -103,8 +103,8 @@ describe('API Endpoints Integration Tests', () => {
               operator: '>',
               value: 65,
             },
-            true_node_id: 'msg1',
-            false_node_id: 'msg2',
+            on_true_next_node_id: 'msg1',
+            on_false_next_node_id: 'msg2',
           },
           {
             id: 'msg1',
@@ -155,9 +155,10 @@ describe('API Endpoints Integration Tests', () => {
     it('should trigger journey execution and return 202 with run_id', async () => {
       const triggerData = {
         patient_context: {
-          patient_id: 'patient-001',
+          id: 'patient-001',
           age: 45,
-          condition: 'diabetes',
+          language: 'en' as const,
+          condition: 'hip_replacement' as const,
         },
       };
 
@@ -178,8 +179,10 @@ describe('API Endpoints Integration Tests', () => {
     it('should return 404 for non-existent journey', async () => {
       const triggerData = {
         patient_context: {
-          patient_id: 'patient-001',
+          id: 'patient-001',
           age: 45,
+          language: 'en' as const,
+          condition: 'knee_replacement' as const,
         },
       };
 
@@ -202,10 +205,12 @@ describe('API Endpoints Integration Tests', () => {
       expect(response.body.error).toContain('patient_context');
     });
 
-    it('should return 400 for missing patient_id in context', async () => {
+    it('should return 400 for missing id in context', async () => {
       const triggerData = {
         patient_context: {
           age: 45,
+          language: 'en' as const,
+          condition: 'hip_replacement' as const,
         },
       };
 
@@ -214,7 +219,7 @@ describe('API Endpoints Integration Tests', () => {
         .send(triggerData)
         .expect(400);
 
-      expect(response.body.error).toContain('patient_id');
+      expect(response.body.error).toContain('id');
     });
   });
 
@@ -245,9 +250,10 @@ describe('API Endpoints Integration Tests', () => {
       // Trigger execution
       const triggerData = {
         patient_context: {
-          patient_id: 'patient-001',
+          id: 'patient-001',
           age: 45,
-          condition: 'diabetes',
+          language: 'es' as const,
+          condition: 'knee_replacement' as const,
         },
       };
 
@@ -267,9 +273,10 @@ describe('API Endpoints Integration Tests', () => {
       expect(response.body).toHaveProperty('journey_id', journeyId);
       expect(response.body).toHaveProperty('patient_context');
       expect(response.body.patient_context).toEqual({
-        patient_id: 'patient-001',
+        id: 'patient-001',
         age: 45,
-        condition: 'diabetes',
+        language: 'es',
+        condition: 'knee_replacement',
       });
       expect(response.body).toHaveProperty('status');
       expect(['in_progress', 'completed', 'failed']).toContain(

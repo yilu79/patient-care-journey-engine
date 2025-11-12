@@ -1,4 +1,4 @@
--- RevelAI Journey Engine Database Schema
+-- Patient Care Journey Engine Database Schema
 -- SQLite schema for storing journey definitions and execution runs
 
 -- Table for storing journey definitions

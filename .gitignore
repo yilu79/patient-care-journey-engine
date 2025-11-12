@@ -161,3 +161,7 @@ tmp/
 
 # Nodemon
 nodemon.json
+
+# AI-Generated temporary markdown files
+PROJECT_COMPLETION.md
+HOUR_4_COMPLETE.md

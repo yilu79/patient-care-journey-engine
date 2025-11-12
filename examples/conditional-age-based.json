@@ -16,8 +16,8 @@
         "operator": ">",
         "value": 65
       },
-      "true_node_id": "senior_message",
-      "false_node_id": "general_message"
+      "on_true_next_node_id": "senior_message",
+      "on_false_next_node_id": "general_message"
     },
     {
       "id": "senior_message",
