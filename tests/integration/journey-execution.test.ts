@@ -62,7 +62,7 @@ describe('Journey Execution Integration Tests', () => {
       expect(runId).toBeDefined();
 
       // Wait for execution to complete
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       // Check final status
       const statusResponse = await request(app)

@@ -21,7 +21,9 @@ src/
 ├── app.ts           # Express app setup
 └── server.ts        # Server entry point
 tests/
-└── integration/     # E2E tests
+├── unit/            # Unit tests (30 tests)
+└── integration/     # Integration tests (22 tests)
+examples/            # Sample journey JSON files
 ```
 
 ## 🚀 Quick Start
@@ -201,21 +203,6 @@ GET /journeys/runs/:runId
 - `created_at` - ISO 8601 timestamp of run creation
 - `updated_at` - ISO 8601 timestamp of last update
 
-**Validation Testing:**
-
-✅ **Happy Path Tests:**
-
-- Returns 200 with all required fields for valid run ID
-- Patient context preserved with all custom fields
-- Timestamps in ISO 8601 format
-- Proper JSON structure
-
-✅ **Negative Tests:**
-
-- Returns 404 for non-existent run ID
-- Returns 404 for invalid UUID format
-- Graceful error messages with context
-
 ## 🧩 Journey Node Types
 
 ### MESSAGE Node
@@ -341,16 +328,29 @@ When a journey is triggered via `POST /journeys/:id/trigger`:
 - **Status Updates:** After each node, `current_node_id` updated in database
 - **Error Handling:** Failed runs marked as `failed` with error logging
 
-## 🧪 Testing the API
+## 🧪 Testing
 
-### Using curl
+### Quick Start
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage report
+npm test -- --coverage
+
+# Run in watch mode
+npm test -- --watch
+```
+
+### Manual Testing with curl
 
 1. **Create a journey:**
 
    ```bash
    curl -X POST http://localhost:3000/journeys \
      -H "Content-Type: application/json" \
-     -d @test-journey.json
+     -d @examples/simple-message.json
    ```
 
 2. **Trigger execution:**
@@ -361,77 +361,26 @@ When a journey is triggered via `POST /journeys/:id/trigger`:
      -d '{"patient_context":{"patient_id":"patient-123","age":70}}'
    ```
 
-3. **Check run status:**
-
+3. **Check status:**
    ```bash
    curl http://localhost:3000/journeys/runs/{RUN_ID}
    ```
 
-4. **Test 404 error handling:**
-   ```bash
-   # Non-existent run ID
-   curl -i http://localhost:3000/journeys/runs/non-existent-id
-   # Expected: HTTP 404 with error message
-   ```
-
-### Automated Test Script
-
-Run the included test script for comprehensive E2E testing:
+### Test Suite Overview
 
 ```bash
-# Make sure server is running first
-npm run dev
+52 tests across 4 suites - all passing ✅
+├── Unit Tests (30)
+│   ├── Conditional evaluator (22 tests)
+│   └── Executor logic (8 tests)
+└── Integration Tests (22)
+    ├── API endpoints (14 tests)
+    └── Journey execution E2E (8 tests)
 
-# In another terminal, run the test script
-./test-executor.sh
+Code Coverage: 74% overall
 ```
 
-**Test Script Features:**
-
-- Creates a journey with MESSAGE and CONDITIONAL nodes
-- Tests senior patient path (age > 65)
-- Tests general patient path (age < 65)
-- Verifies execution completion and status updates
-- Displays formatted JSON responses
-- Checks server logs for MESSAGE outputs
-
-### Complete Test Flow
-
-```bash
-# 1. Create journey
-JOURNEY_ID=$(curl -s -X POST http://localhost:3000/journeys \
-  -H "Content-Type: application/json" \
-  -d @test-journey.json | jq -r '.journey_id')
-
-echo "Journey ID: $JOURNEY_ID"
-
-# 2. Trigger execution
-RUN_ID=$(curl -s -X POST http://localhost:3000/journeys/$JOURNEY_ID/trigger \
-  -H "Content-Type: application/json" \
-  -d '{"patient_context":{"patient_id":"patient-123","age":70}}' | jq -r '.run_id')
-
-echo "Run ID: $RUN_ID"
-
-# 3. Check status (with pretty print)
-curl -s http://localhost:3000/journeys/runs/$RUN_ID | jq
-```
-
-### Validated Test Cases
-
-The GET endpoint has been validated with the following test scenarios:
-
-✅ **Happy Path:**
-
-- Valid run ID returns complete data with all fields
-- Patient context includes all custom fields
-- Status reflects current execution state
-- Timestamps in proper ISO format
-
-✅ **Error Handling:**
-
-- Non-existent run ID returns 404
-- Invalid UUID format returns 404
-- Error responses include helpful context
+For detailed testing documentation, see [TESTING.md](TESTING.md).
 
 ## 🛠️ Development
 
@@ -545,31 +494,20 @@ The SQLite database is automatically created and initialized with the required s
 - **DELAY Nodes:** setTimeout-based (production would use durable job queue)
 - **Error Handling:** Failed journeys marked as `failed` with error logging
 
-## 📝 Journey Validation
-
-The API performs comprehensive validation:
-
-- **Structure validation**: Ensures all required fields are present
-- **Reference integrity**: Verifies all `next_node_id` references exist
-- **Node type validation**: Validates node-specific requirements
-- **Duplicate prevention**: Checks for duplicate node IDs
-- **Conditional logic**: Validates condition syntax and operators
-
-## 🚨 Error Handling
+## Error Handling
 
 The API provides detailed error responses:
 
-- `400 Bad Request` - Validation errors with detailed explanations
+- `400 Bad Request` - Validation errors (missing fields, invalid references, duplicate node IDs)
 - `404 Not Found` - Journey or run not found
-- `409 Conflict` - Database constraint violations
-- `500 Internal Server Error` - Server errors (with details in development)
+- `500 Internal Server Error` - Server errors
 
-### Journey Execution Error Handling
+**Validation includes:**
 
-- **Missing Journey/Run:** Graceful handling with error logging
-- **Invalid Node References:** Journey marked as `failed`
-- **Node Processing Errors:** Caught and logged, run status set to `failed`
-- **Database Errors:** Transaction rollback and error reporting
+- Structure validation and required fields
+- Reference integrity (all `next_node_id` values exist)
+- Node-specific requirements (CONDITIONAL operators, etc.)
+- Execution errors are caught and runs marked as `failed`
 
 ## ⚠️ Known Limitations
 
@@ -604,44 +542,17 @@ The API provides detailed error responses:
    - No nested conditions
    - **Future Enhancement:** Expression language support
 
-## ✅ Implementation Status
+## ✅ Project Status
 
-### Hour 1: Project Setup & Core Data Models ✅
+**All objectives completed:**
 
-- ✅ npm installation and TypeScript configuration
-- ✅ Project structure with organized directories
-- ✅ Complete type definitions (Journey, JourneyRun, PatientContext, Nodes)
-- ✅ SQLite database schema with proper indexes
-- ✅ Type-safe database queries with prepared statements
+- ✅ TypeScript backend with SQLite database
+- ✅ REST API with 3 endpoints (create, trigger, status)
+- ✅ Journey executor supporting MESSAGE, CONDITIONAL, DELAY nodes
+- ✅ Comprehensive test suite (52 tests, 74% coverage)
+- ✅ Complete documentation
 
-### Hour 2: API Implementation ✅
-
-- ✅ Express app setup with middleware and error handling
-- ✅ POST /journeys - Create journey with comprehensive validation
-- ✅ POST /journeys/:id/trigger - Trigger execution (202 Accepted)
-- ✅ GET /journeys/runs/:runId - Get run status
-- ✅ All endpoints tested and validated
-
-### Hour 3: Journey Executor Logic ✅
-
-- ✅ Core executor service (`src/services/executor.ts`)
-- ✅ MESSAGE node handler (console logging + continuation)
-- ✅ CONDITIONAL node handler (all operators: >, <, >=, <=, =, !=)
-- ✅ DELAY node handler (setTimeout with in-memory tracking)
-- ✅ Main `executeJourney()` function with error handling
-- ✅ Integration with trigger endpoint (async execution)
-- ✅ E2E testing with test script (`test-executor.sh`)
-- ✅ All node types tested and working correctly
-
-### Hour 4: Testing & Documentation ✅
-
-- ✅ Jest configuration with ts-jest
-- ✅ Unit tests for executor and conditional logic (30 tests)
-- ✅ Integration tests for API endpoints and journey execution (22 tests)
-- ✅ Example journey files (4 scenarios)
-- ✅ README documentation (comprehensive)
-- ✅ Test coverage reporting (74% overall)
-- ✅ TESTING.md with detailed test documentation
+See [PROJECT_COMPLETION.md](PROJECT_COMPLETION.md) for detailed implementation timeline.
 
 ## 🔮 Future Enhancements
 
